@@ -1,12 +1,23 @@
 import InputText from "../components/InputText"
 import Button from "../components/Button"
-import { Link, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Heading from "../components/Heading"
-import useFetch from "../hooks/useFetch"
+import { useEffect, useState } from "react"
 
 const UserDetails = () => {
   const {userId} = useParams();
-  const data = useFetch(`http://localhost:8000/users/${userId}`);
+  const [data, setData] = useState({});
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    getUser();
+  }, []);
+  
+  const getUser = async () => {
+    const response = await fetch(`http://localhost:8000/users/${userId}`);
+    const user = await response.json();
+    setData(user);
+  }
   
   return (
     <>
@@ -15,9 +26,7 @@ const UserDetails = () => {
     <InputText label={'Email address'} variant={'outlined'} value={data.email ?? ''} readonly/>
     <InputText label={'Phone Number'} variant={'outlined'} value={data.number ?? ''} readonly/>
     <InputText label={'City/Province'} variant={'outlined'} value={data.location ?? ''} readonly/>
-    <Link to={'/'}>
-      <Button title='Go back to list'/>
-    </Link>
+      <Button title='Go back to list' onclick={()=>navigate('/')}/>
     </>
   )
 }

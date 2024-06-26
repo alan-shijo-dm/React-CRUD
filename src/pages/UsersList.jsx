@@ -3,18 +3,35 @@ import Paper from '@mui/material/Paper';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Heading from "../components/Heading";
-import useFetch from "../hooks/useFetch";
+import { useEffect, useState } from "react";
 const UsersList = () => {
-  const data = useFetch('http://localhost:8000/users');
-  const handleDelete = async(id) => {
-    await fetch(`http://localhost:8000/users/${id}`,{
-      method: 'DELETE'
-    });
+  const [data, setData] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    getAllUsers();
+  }, [data]);
+
+  const getAllUsers = async ()=>{
+    try{
+      const response = await fetch('http://localhost:8000/users');
+      const users = await response.json();
+      setData(users);
+    }catch(error){
+      console.error(error);
+    }
   }
 
+  const handleDelete = async (id) => {
+    if(confirm('Are you sure to delete this user?')){
+      await fetch(`http://localhost:8000/users/${id}`,{
+        method: 'DELETE'
+      });
+    }
+  }
   return (
     <>
     <Heading title={'List All Users'}/>
@@ -54,9 +71,11 @@ const UsersList = () => {
                 <TableCell>{row.number ?? ''}</TableCell>
                 <TableCell>{row.location ?? ''}</TableCell>
                 <TableCell align="center">
-                    <Link to={`/users/${row.id}`}><Button title={<VisibilityOutlinedIcon titleAccess="View"/>}/></Link>
-                    <Link to={`/users/${row.id}/edit`}><Button title={<EditOutlinedIcon titleAccess="Edit"/>}/></Link>
-                    <Button title={<DeleteOutlineOutlinedIcon titleAccess="Delete"/>} onclick={() => handleDelete(row.id)}/>
+                  <Box display={'flex'} flexDirection={'column'}>
+                    <Button title={<VisibilityOutlinedIcon titleAccess="View"/>} onclick={()=>navigate(`/users/${row.id}`)}/>
+                    <Button title={<EditOutlinedIcon titleAccess="Edit"/>} onclick={()=>navigate(`/users/${row.id}/edit`)}/>
+                    <Button title={<DeleteOutlineOutlinedIcon titleAccess="Delete"/> } onclick={()=>handleDelete(row.id)}/>
+                  </Box>
                 </TableCell>
             </TableRow>
             })}

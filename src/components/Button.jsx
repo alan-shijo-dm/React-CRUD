@@ -1,7 +1,7 @@
 import {Button as MuiButton} from "@mui/material";
-const Button = ({title, variant, onclick}) => {
+const Button = ({title, variant, type, onclick}) => {
   return (
-    <MuiButton variant={variant} onClick={onclick}>{title}</MuiButton>
+    <MuiButton  type={type} variant={variant} onClick={onclick}>{title}</MuiButton>
   )
 }
 
