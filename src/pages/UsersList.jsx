@@ -13,7 +13,7 @@ const UsersList = () => {
 
   useEffect(()=>{
     getAllUsers();
-  }, [data]);
+  }, []);
 
   const getAllUsers = async ()=>{
     try{
@@ -30,6 +30,7 @@ const UsersList = () => {
       await fetch(`http://localhost:8000/users/${id}`,{
         method: 'DELETE'
       });
+      setData(data.filter(user => user.id !== id));
     }
   }
   return (
